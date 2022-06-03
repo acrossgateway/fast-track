@@ -20,5 +20,9 @@ pom.xml.versionsBackup
 # Ignore Gradle project-specific cache directory
 .gradle
 
+
 # Ignore Gradle build output directory
 build
+buildSrc
+list
+utilities

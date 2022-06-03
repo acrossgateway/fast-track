@@ -1,19 +1,37 @@
 pipeline {
    agent {
-     label "maven"
+     label "${params.AGENT_LABEL ?: 'master'}"
    }
    stages {
-     stage('pmd') {
+     stage('env') {
        steps {
-          echo "pmd"
-          sh('mvn pmd:pmd')
+          script {
+            if (isUnix()) {
+              sh "env|sort"
+            } else {
+              bat "set"
+            }
+          }          
+       }
+     }
+     stage('gradle-build') {
+       steps {
+          script {
+            if (isUnix()) {
+              sh "./gradlew clean build"
+            } else {
+              bat "gradlew.bat clean build"
+            }
+          }          
        }
      }
    }
    post {
-     success {
+     always {
        echo "scuccess"
-       recordIssues(tools: [pmdParser(pattern: 'target/pmd.xml', reportEncoding: 'UTF-8')])
+       recordIssues enabledForFailure: true, tools: [pmdParser(pattern: '**/pmd/main.xml', reportEncoding: 'UTF-8'),
+                             spotBugs(pattern: '**/spotbugs/main.xml', reportEncoding: 'UTF-8'),
+                             checkStyle(pattern: '**/checkstyle/main.xml', reportEncoding: 'UTF-8')]
      }
   }
 }
