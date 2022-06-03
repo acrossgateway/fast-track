@@ -6,4 +6,8 @@ public class App {
     Problem problem = new Problem(1, "world", "category", "hello");
     System.out.println(problem.getComment() + " " + problem.getCategory());
   }
+
+  public String getComment() {
+    return "Hello world!";
+  }
 }
