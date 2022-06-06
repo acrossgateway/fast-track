@@ -23,9 +23,11 @@ public class Problem {
   public int getNumber() {
     return this.number;
   }
+
   public String getComment() {
     return this.comment;
   }
+
   public String getCategory() {
     return this.category;
   }
