@@ -2,31 +2,19 @@ package com.service.system.dmc;
 
 public class Problem {
 
-  private int number;
+  private String greeting;
+  private String object;
 
-  // 利用してない変数として指摘される
-  private String type;
-
-  // 利用してない変数として指摘される
-  private String category;
-
-  // 利用してない変数として指摘される
-  private String comment;
-
-  public Problem(int number, String type, String category, String comment) {
-    this.number = number;
-    this.type = type;
-    this.category = category;
-    this.comment = comment;
+  public Problem(String greeting, String object) {
+    this.greeting = greeting;
+    this.object = object;
   }
 
-  public int getNumber() {
-    return this.number;
+  public String getGreeting() {
+    return this.greeting;
   }
-  public String getComment() {
-    return this.comment;
-  }
-  public String getCategory() {
-    return this.category;
+
+  public String getObject() {
+    return this.object;
   }
 }
