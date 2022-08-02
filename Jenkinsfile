@@ -1,6 +1,6 @@
 pipeline {
    agent {
-     label "${parms.LABEL ?: 'master'}"
+     label "${params.AGENT_LABEL ?: 'master'}"
    }
    stages {
      stage('env') {
@@ -20,19 +20,18 @@ pipeline {
             if (isUnix()) {
               sh "./gradlew clean build"
             } else {
-              bat "./gradlew.bat clean build"
+              bat "gradlew.bat clean build"
             }
           }          
        }
      }
    }
    post {
-     success {
+     always {
        echo "scuccess"
-       recordIssues(tools: [pmdParser(pattern: '**/reports/pmd/main.xml', reportEncoding: 'UTF-8'),
-                             spotBugs(pattern: '**/report/spotbugs/main.xml', reportEncoding: 'UTF-8'),
-                             spotBugs(pattern: '**/reports/spotbugs/main.xml', reportEncoding: 'UTF-8'),
-                             checkStyle(pattern: '**/reports/checkstyle/main.xml', reportEncoding: 'UTF-8')])
+       recordIssues enabledForFailure: true, tools: [pmdParser(pattern: '**/pmd/main.xml', reportEncoding: 'UTF-8'),
+                             spotBugs(pattern: '**/spotbugs/main.xml', reportEncoding: 'UTF-8'),
+                             checkStyle(pattern: '**/checkstyle/main.xml', reportEncoding: 'UTF-8')]
      }
   }
 }
