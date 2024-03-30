@@ -3,9 +3,9 @@
  */
 package com.service.system.dmc;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AppTest {
   @Test
