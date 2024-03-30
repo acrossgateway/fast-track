@@ -1,26 +1,74 @@
 plugins {
     id 'application'
-    id 'com.github.spotbugs' version '4.7.2'
+    id 'java'
     id 'pmd'
     id 'checkstyle'
+    id 'jacoco'
+    id 'com.github.spotbugs' version '4.7.2'
     id 'com.github.sherter.google-java-format' version '0.9'
+    id 'org.flywaydb.flyway' version '7.15.0'
+    id "com.qqviaja.gradle.MybatisGenerator" version "2.5"
+}
+
+group = 'com.service.system.dmc'
+version = '0.0.1-SNAPSHOT'
+
+configurations {
+    mybatisGenerator
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation 'junit:junit:4.13.2'
-}
 
 application {
     mainClass = 'com.service.system.dmc.App'
 }
 
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+    implementation 'org.mybatis.generator:mybatis-generator-core:1.4.2'
+    implementation 'mysql:mysql-connector-java:8.0.33'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
+    testImplementation 'org.junit.platform:junit-platform-launcher:1.6.0'
+}
+
+test {
+    useJUnitPlatform()
+    ignoreFailures = true
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required = true
+        xml.required = true
+    }
+}
+
+mybatisGenerator {
+    verbose = true
+    configFile = './generatorConfig.xml'
+    
+    // optional, here is the override dependencies for the plugin or you can add other database dependencies.
+    dependencies {
+        mybatisGenerator 'com.itfsw:mybatis-generator-plugin:1.3.7'
+        mybatisGenerator 'org.mybatis.generator:mybatis-generator-core:1.4.2'
+        mybatisGenerator 'mysql:mysql-connector-java:8.0.33'
+    }
+}
+
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
+
 
 pmd {
     ignoreFailures = true
@@ -34,10 +82,18 @@ spotbugs {
 
 checkstyle {
   toolVersion = '9.3'
-  configFile = file("config/checkstyle/google_checks.xml")
+  configFile = file('config/checkstyle/google_checks.xml')
   ignoreFailures = true
   showViolations = false
 }
+
+flyway {
+    url = 'jdbc:mysql://localhost:3306/world?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8'
+    user = 'developer'
+    password = 'password'
+    locations = ['filesystem:./database/world/migration']
+}
+
 
 spotbugsTest.enabled = false
 pmdTest.enabled = false
