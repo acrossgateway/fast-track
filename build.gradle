@@ -1,13 +1,15 @@
 plugins {
-    id 'application'
-    id 'java'
-    id 'pmd'
-    id 'checkstyle'
-    id 'jacoco'
-    id 'com.github.spotbugs' version '4.7.2'
-    id 'com.github.sherter.google-java-format' version '0.9'
-    id 'org.flywaydb.flyway' version '7.15.0'
-    id "com.qqviaja.gradle.MybatisGenerator" version "2.5"
+  id 'application'
+  id 'java'
+  id 'jacoco'
+  id 'pmd'
+  id 'checkstyle'
+  id 'com.github.spotbugs' version '6.0.7'
+  id 'com.diffplug.spotless' version '6.25.0'
+  id 'org.flywaydb.flyway' version '7.15.0'
+  id "com.qqviaja.gradle.MybatisGenerator" version "2.5"
+  id 'org.springframework.boot' version '3.3.3'
+  id 'io.spring.dependency-management' version '1.1.6'
 }
 
 group = 'com.service.system.dmc'
@@ -20,37 +22,34 @@ configurations {
     }
 }
 
+java {
+  sourceCompatibility = JavaVersion.VERSION_21
+  targetCompatibility = JavaVersion.VERSION_21
+}
+
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
-
-
-application {
-    mainClass = 'com.service.system.dmc.App'
-}
-
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.28'
-    annotationProcessor 'org.projectlombok:lombok:1.18.28'
-    implementation 'org.mybatis.generator:mybatis-generator-core:1.4.2'
-    implementation 'mysql:mysql-connector-java:8.0.33'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
-    testImplementation 'org.junit.platform:junit-platform-launcher:1.6.0'
+  // implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'org.springframework.boot:spring-boot-starter'
+  implementation 'org.springframework.boot:spring-boot-starter-actuator'
+  implementation 'org.springframework.boot:spring-boot-configuration-processor'
+  implementation 'org.mybatis.generator:mybatis-generator-core:1.4.2'
+  implementation 'mysql:mysql-connector-java:8.0.33'
+
+  annotationProcessor 'org.projectlombok:lombok:1.18.30'
+  compileOnly 'org.projectlombok:lombok:1.18.30'
+  
+  testImplementation('org.springframework.boot:spring-boot-starter-test') {
+    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+  }
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-test {
-    useJUnitPlatform()
-    ignoreFailures = true
-    finalizedBy jacocoTestReport
-}
-
-jacocoTestReport {
-    dependsOn test
-    reports {
-        html.required = true
-        xml.required = true
-    }
+application {
+  mainClass = 'com.service.system.dmc.App'
 }
 
 mybatisGenerator {
@@ -66,23 +65,51 @@ mybatisGenerator {
 }
 
 tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+  options.encoding = 'UTF-8'
 }
 
+spotless {
+  java {
+    googleJavaFormat() 
+    importOrder()
+    removeUnusedImports()
+    trimTrailingWhitespace()
+    endWithNewline()
+  }
+}
+
+jacoco {
+  toolVersion = "0.8.11"
+}
+
+test {
+  useJUnitPlatform() 
+  ignoreFailures = true
+  finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+  dependsOn test
+  reports {
+    html.required = true
+    xml.required = true
+  }
+}
 
 pmd {
-    ignoreFailures = true
+  toolVersion = "7.0.0"
+  ignoreFailures = true
 }
 
 spotbugs {
-  toolVersion.set('4.3.0')
+  toolVersion.set('4.8.0')
   ignoreFailures.set(true)
   showStackTraces.set(false)
 }
 
 checkstyle {
-  toolVersion = '9.3'
-  configFile = file('config/checkstyle/google_checks.xml')
+  toolVersion = '10.12.5'
+  configFile = file("config/checkstyle/google_checks.xml")
   ignoreFailures = true
   showViolations = false
 }
@@ -93,9 +120,6 @@ flyway {
     password = 'password'
     locations = ['filesystem:./database/world/migration']
 }
-
-
 spotbugsTest.enabled = false
 pmdTest.enabled = false
 checkstyleTest.enabled = false
-verifyGoogleJavaFormat.enabled = false
