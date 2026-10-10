@@ -13,22 +13,33 @@ public class Problem {
   // 利用してない変数として指摘される
   private String comment;
 
-  public Problem(int number, String type, String category, String comment) {
+  private int a;
+
+  // 利用してない変数として指摘される
+  private String b;
+
+  // 利用してない変数として指摘される
+  private String c;
+
+  // 利用してない変数として指摘される
+  private String d;
+
+  public Problem(
+      int number,
+      String type,
+      String category,
+      String comment,
+      int a,
+      String b,
+      String c,
+      String d) {
     this.number = number;
     this.type = type;
     this.category = category;
     this.comment = comment;
-  }
-
-  public int getNumber() {
-    return this.number;
-  }
-
-  public String getComment() {
-    return this.comment;
-  }
-
-  public String getCategory() {
-    return this.category;
+    this.a = a;
+    this.b = b;
+    this.c = c;
+    this.d = d;
   }
 }

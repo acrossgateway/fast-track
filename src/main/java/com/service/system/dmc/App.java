@@ -1,13 +1,20 @@
 package com.service.system.dmc;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
 public class App {
 
+  @Value("${spring.app.comment}")
+  private String comment;
+
   public static void main(String[] args) {
-    Problem problem = new Problem(1, "world", "category", "hello");
-    System.out.println(problem.getComment() + " " + problem.getCategory());
+    SpringApplication.run(App.class, args);
   }
 
   public String getComment() {
-    return "Hello world!";
+    return comment;
   }
 }
