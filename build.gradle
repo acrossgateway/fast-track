@@ -54,7 +54,7 @@ application {
 
 mybatisGenerator {
     verbose = true
-    configFile = './generatorConfig.xml'
+    configFile = 'config/mybatis/generatorConfig.xml'
     
     // optional, here is the override dependencies for the plugin or you can add other database dependencies.
     dependencies {
@@ -97,7 +97,7 @@ jacocoTestReport {
 }
 
 pmd {
-  toolVersion = "7.0.0"
+  toolVersion = "7.5.0"
   ignoreFailures = true
 }
 
