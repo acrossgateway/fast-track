@@ -1,0 +1,68 @@
+name: 'Quality Monitor'
+
+on: 
+  workflow_dispatch
+
+env:
+  JAVA_VERSION: '21'
+
+jobs:
+  monitor-project-quality:
+    name: Run the quality monitor
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v7
+
+      - name: setup jdk
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: "${{ env.JAVA_VERSION }}"
+
+      - name: gradle cache setting
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/dependency-check-data
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+
+      - name: Build # (compile, test with code and mutation coverage, and run static analysis)
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build
+        
+      - name: Run PMD Report
+        uses: jwgmeligmeyling/pmd-github-action@master
+        with:
+          path: '**/pmd/main.xml' 
+          
+      - name: Run Quality Monitor
+        uses: uhafner/quality-monitor@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # pr-number: ${{ steps.pr.outputs.number }}
+          skip-annotations: true
+          config: > # Override default configuration: just grade the test results
+            { 
+              "analysis": [{
+              "name": "static-analysis",
+              "id": "static-analysis",
+              "tools": [{
+                  "id": "pmd",
+                  "name": "PMD",
+                  "pattern": "**/pmd/main.xml"
+              }]
+              }]
+            }
+          quality-gates: >
+            {
+              "qualityGates": [{
+                  "metric": "static-",
+                  "threshold": 10.0,
+                  "criticality": "UNSTABLE"
+              }]
+            }
