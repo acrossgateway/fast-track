@@ -61,8 +61,8 @@ jobs:
           quality-gates: >
             {
               "qualityGates": [{
-                  "metric": "static-",
-                  "threshold": 10.0,
+                  "metric": "static-analysis",
+                  "threshold": 1.0,
                   "criticality": "UNSTABLE"
               }]
             }
